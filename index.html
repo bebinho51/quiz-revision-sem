@@ -117,80 +117,128 @@
 <div id="app"></div>
 
 <script>
-// MODE NORMAL
+// ═══════════════════════════════════════════════════════════
+// VALEURS CONFIRMÉES SUR LA FICHE :
+// PROTECTAS = Intégrité, Vigilance, Serviabilité
+// SEM = Confiance, Courage, Respect, Vision à long terme
+// ═══════════════════════════════════════════════════════════
+
 const QUESTIONS_NORMAL = [
+  // PARADES
   { theme:"Parades", q:"Quelle action correspond à la parade haute ?", opts:["Parade à une main vers l'extérieur","Parade à 2 mains vers le haut","Parade à 2 mains vers le bas","Parade à une main"], ans:1, explanation:"La parade haute s'effectue à 2 mains vers le haut. Elle protège la tête d'un coup venant d'en haut." },
   { theme:"Parades", q:"La parade sur coup de poing direct s'effectue comment ?", opts:["Parade à 2 mains vers le haut","Parade à 2 mains vers le bas","Parade à une main","Parade à une main vers l'extérieur"], ans:2, explanation:"Le coup de poing direct se pare à une main. Il protège la tête d'un coup de poing venant directement au visage." },
   { theme:"Parades", q:"Objectif de la parade sur uppercut ?", opts:["Protéger les jambes","Protéger la tête d'un coup latéral","Protéger la tête d'un coup venant d'en bas","Protéger les parties génitales"], ans:2, explanation:"L'uppercut est un coup de poing venant d'en bas. La parade s'effectue à 2 mains vers le bas (milieu thorax) pour protéger la tête." },
   { theme:"Parades", q:"La parade contre coup de pied frontal protège :", opts:["La tête","Le visage","Les jambes et parties génitales","Le torse"], ans:2, explanation:"Le coup de pied frontal vient d'en bas. La parade à 2 mains vers le bas protège les jambes et les parties génitales." },
   { theme:"Parades", q:"Parade sur coup de poing en crochet :", opts:["2 mains vers le haut","Une main vers l'extérieur","2 mains vers le bas","Une main directe"], ans:1, explanation:"Le crochet est un coup venant du côté. La parade s'effectue à une main vers l'extérieur pour protéger la tête." },
+
+  // CLÉS
   { theme:"Clés", q:"La clé d'escorte sert à :", opts:["Mettre au sol","Contrôler résistance active","Contrôler résistance passive et déplacer","Immobiliser au sol"], ans:2, explanation:"La clé d'escorte sert à contrôler une personne faisant preuve de résistance passive, puis à la déplacer." },
   { theme:"Clés", q:"Quelle clé utilise un 'enroulement de l'épaule' ?", opts:["Clé de poignet","Clé d'escorte","Clé de coude","Clé d'épaule"], ans:3, explanation:"La clé d'épaule s'effectue par un enroulement de l'épaule pour mettre au sol et contrôler une résistance active." },
   { theme:"Clés", q:"La clé de poignet (bec de cane) est utilisée pour :", opts:["Résistance passive","Résistance active","Déplacer sans contact","Mettre au sol"], ans:1, explanation:"La clé de poignet (bec de cane) sert à contrôler une personne qui oppose une résistance active." },
   { theme:"Clés", q:"Clé de coude amenée au sol en rotation :", opts:["Résistance passive","Mettre au sol et contrôler résistance active","Déplacer une personne consciente","Immobiliser un objet"], ans:1, explanation:"La clé de coude amenée au sol en rotation sert à mettre au sol et contrôler une personne qui oppose une résistance active." },
+
+  // CODE PÉNAL
   { theme:"Code pénal", q:"Article 15 CP ?", opts:["Omission de prêter secours","Légitime défense","État de nécessité licite","Arrestation par des particuliers"], ans:1, explanation:"Art. 15 CP = Légitime Défense. Quiconque est attaqué a le droit de repousser l'attaque par des moyens proportionnés." },
   { theme:"Code pénal", q:"L'article 128 CP correspond à :", opts:["Légitime défense","État de nécessité","Omission de prêter secours","Arrestation"], ans:2, explanation:"Art. 128 CP = Omission de prêter secours. Punit celui qui ne porte pas secours à une personne en danger imminent de mort." },
   { theme:"Code pénal", q:"L'article 17 CP c'est :", opts:["Légitime défense","État de nécessité licite","Arrestation","Omission de prêter secours"], ans:1, explanation:"Art. 17 CP = État de nécessité licite. Permet de commettre un acte punissable pour préserver un bien juridique d'un danger imminent." },
   { theme:"Code pénal", q:"L'article 218 CPP traite de :", opts:["Légitime défense","État de nécessité","Arrestation par des particuliers","Omission de prêter secours"], ans:2, explanation:"Art. 218 CPP = Arrestation par des particuliers. Permet d'arrêter une personne en flagrant délit, à remettre à la police dès que possible." },
+
+  // SALLE DE SÉCURITÉ
   { theme:"Salle de sécurité", q:"Quand est-il permis d'utiliser la salle de sécurité ?", opts:["Personne agitée","Sur ordre police","Danger grave + mesures moins sévères inefficaces","Toujours"], ans:2, explanation:"Deux conditions cumulatives : danger grave pour soi-même ou autrui ET les mesures moins sévères sont inefficaces." },
   { theme:"Salle de sécurité", q:"Qui faut-il contacter AVANT ?", opts:["Uniquement SEM","Police ET SEM ou PreSec","Le médecin","Le RA"], ans:1, explanation:"Avant d'utiliser l'espace sécurisé, il faut contacter la police ET le SEM ou PreSec." },
   { theme:"Salle de sécurité", q:"Dans quel cas ce n'est PLUS autorisé ?", opts:["Plus de 30 min","Personne calmée OU > 2h OU police quitte CFA","Si la personne dort","Jamais"], ans:1, explanation:"3 cas d'arrêt : utilisation > 2 heures, personne s'est calmée, ou la police quitte le CFA." },
   { theme:"Salle de sécurité", q:"Quelle base juridique légitime ?", opts:["Code pénal Art. 50","Ordonnance centres fédéraux Art. 29a","Loi police","Convention Genève"], ans:1, explanation:"Art. 29a de l'Ordonnance sur l'exploitation des centres fédéraux. C'est l'une des 3 bases juridiques (avec ch.4 Directive interne et ch.2.3 Garantie sécurité)." },
+
+  // PROPORTIONNALITÉ
   { theme:"Proportionnalité", q:"Que signifie 'Adéquat' ?", opts:["La plus modérée","Appropriée pour atteindre l'objectif","Charge non disproportionnée par rapport à l'objectif","Rapide"], ans:2, explanation:"Adéquat = la charge ou la restriction imposée à la personne ne doit pas être disproportionnée par rapport à l'objectif poursuivi." },
   { theme:"Proportionnalité", q:"Que signifie 'Nécessaire' ?", opts:["Urgente","La plus modérée parmi les variantes","Atteint l'objectif","Approuvée par SEM"], ans:1, explanation:"Nécessaire = la mesure doit toujours être la plus modérée parmi les variantes possibles." },
   { theme:"Proportionnalité", q:"Que signifie 'Adapté' ?", opts:["Rapide","Appropriée pour atteindre l'objectif visé","Légale","Modérée"], ans:1, explanation:"Adapté = la mesure doit être appropriée pour atteindre l'objectif visé." },
+
+  // 3D / ORA
   { theme:"Approche 3D", q:"Que signifie l'approche 3D ?", opts:["Discuter/Décider/Défendre","Dialoguer/Désamorcer/Défendre","Détecter/Désamorcer/Défendre","Dialoguer/Décider/Diriger"], ans:1, explanation:"L'approche 3D = Dialoguer / Désamorcer / Défendre. C'est la méthode de gestion progressive d'une situation conflictuelle." },
   { theme:"ORA", q:"Que signifie ORA ?", opts:["Ordonner/Répondre/Agir","Observer/Réfléchir/Agir","Observer/Réagir/Alerter","Orienter/Répondre/Apaiser"], ans:1, explanation:"ORA = Observer / Réfléchir / Agir. Méthode de prise de décision en situation." },
   { theme:"Phases d'engagement", q:"Quelles sont les 4 phases d'engagement ?", opts:["Proche/Moyenne/Lointaine/Extrême","Intime/Personnelle/Sociale/Publique","Agressive/Neutre/Calme/Distante","Directe/Indirecte/Sociale/Légale"], ans:1, explanation:"Les 4 phases d'engagement (distances) sont : Intime, Personnelle, Sociale, Publique. De la plus proche à la plus éloignée." },
+
+  // ÉVACUATION
   { theme:"Évacuation", q:"Un RA peut-il ordonner une évacuation ?", opts:["Oui en urgence","Oui si accompagné","Non","Seulement de nuit"], ans:2, explanation:"Un RA ne peut PAS ordonner une évacuation. Seuls M. TAS, le SSI SEM, la direction du SEM et les feux bleus le peuvent." },
   { theme:"Évacuation", q:"Numéro du piquet SEM ?", opts:["058 123 00 00","058 464 00 00","058 200 10 10","044 464 00 00"], ans:1, explanation:"Le numéro du piquet SEM est le 058 464 00 00." },
   { theme:"PLEX", q:"Que signifie PLEX ?", opts:["Plan d'Évacuation Express","Plan d'Exploitation Hébergement","Plan Logistique Externe","Procédure Légale d'Évacuation"], ans:1, explanation:"PLEX = Plan d'Exploitation Hébergement. Document de référence pour l'organisation du site." },
+
+  // NUMÉROS
   { theme:"Numéros", q:"Numéro de la police en Suisse ?", opts:["118","144","117","145"], ans:2, explanation:"Police = 117. (118 = Pompiers, 144 = Ambulance, 145 = Anti-poison)." },
   { theme:"Numéros", q:"Le 144 correspond à :", opts:["Police","Pompiers","Ambulance","Anti-poison"], ans:2, explanation:"144 = Ambulance. À ne pas confondre avec 145 (Anti-poison) ou 1414 (REGA)." },
   { theme:"Numéros", q:"REGA correspond à quel numéro ?", opts:["1414","145","144","118"], ans:0, explanation:"REGA = 1414. Garde aérienne suisse de sauvetage (sauvetage par hélicoptère)." },
   { theme:"Numéros", q:"Le 145 correspond à :", opts:["Pompiers","Police","Anti-poison","REGA"], ans:2, explanation:"145 = Anti-poison (Tox Info Suisse). Numéro à appeler en cas d'intoxication." },
+
+  // EXTINCTEURS
   { theme:"Extincteurs", q:"Catégorie d'extincteur pour Bois/Papier/Tissu ?", opts:["B","C","A","F"], ans:2, explanation:"Catégorie A = Bois / Papier / Tissu (matières solides combustibles)." },
   { theme:"Extincteurs", q:"La catégorie F couvre :", opts:["Gaz","Métaux","Huiles et graisses","Bois"], ans:2, explanation:"Catégorie F = Feux d'huiles et de graisses (typiquement les feux de cuisine)." },
   { theme:"Extincteurs", q:"La catégorie C couvre :", opts:["Bois","Hydrocarbures","Gaz (Propane/Butane/Gaz naturel)","Métaux"], ans:2, explanation:"Catégorie C = Gaz (Propane, Butane, Gaz naturel)." },
   { theme:"Extincteurs", q:"Catégorie B = ?", opts:["Bois/Papier","Essence/Fioul/Pétrole","Gaz","Métaux"], ans:1, explanation:"Catégorie B = Hydrocarbures liquides (Essence, Fioul, Pétrole)." },
   { theme:"Extincteurs", q:"Catégorie D = ?", opts:["Huiles","Métaux","Gaz","Bois"], ans:1, explanation:"Catégorie D = Feux de métaux (magnésium, sodium, etc.)." },
+
+  // TRIANGLE DU FEU
   { theme:"Triangle du feu", q:"3 éléments du triangle du feu ?", opts:["Chaleur/Oxygène/Carburant","Chaleur/Combustible/Comburant","Feu/Air/Matière","Énergie/Fuel/Oxydant"], ans:1, explanation:"Le triangle du feu = Chaleur + Combustible + Comburant. Supprimer un seul de ces éléments éteint le feu." },
+
+  // COULEURS MENTALES
   { theme:"Couleurs mentales", q:"Couleur jaune signifie :", opts:["Normal","Alarme","Attentif","Pause"], ans:2, explanation:"Jaune = Attentif. État de vigilance accru, on observe activement l'environnement." },
   { theme:"Couleurs mentales", q:"Couleur rouge signifie :", opts:["Normal","Attentif","Pause","En état d'alarme"], ans:3, explanation:"Rouge = En état d'alarme. Niveau le plus élevé, action immédiate requise." },
   { theme:"Couleurs mentales", q:"Couleur verte signifie :", opts:["Attentif","Alarme","Normal, en sécurité, en pause","Danger"], ans:2, explanation:"Vert = Normal, en sécurité, en pause. État de repos, environnement maîtrisé." },
-  { theme:"Valeurs Protectas", q:"Valeurs PROTECTAS ?", opts:["Confiance, Courage, Respect, Vision LT","Intégrité, Vigilance, Fiabilité","Intégrité, Courage, Fiabilité, Respect","Vigilance, Confiance, Respect"], ans:1, explanation:"Les 3 valeurs Protectas sont : Intégrité, Vigilance, Fiabilité." },
-  { theme:"Valeurs SEM", q:"Valeurs du SEM ?", opts:["Intégrité, Vigilance, Fiabilité","Confiance, Courage, Respect, Vision à long terme","Loyauté, Discipline, Service","Sécurité, Ordre, Respect"], ans:1, explanation:"Les 4 valeurs SEM sont : Confiance, Courage, Respect, Vision à long terme." },
+
+  // VALEURS — CORRIGÉES !
+  { theme:"Valeurs Protectas", q:"Valeurs PROTECTAS ?", opts:["Confiance, Courage, Respect, Vision LT","Intégrité, Vigilance, Serviabilité","Intégrité, Courage, Fiabilité, Respect","Vigilance, Confiance, Respect"], ans:1, explanation:"Les 3 valeurs Protectas sont : Intégrité, Vigilance, Serviabilité." },
+  { theme:"Valeurs SEM", q:"Valeurs du SEM ?", opts:["Intégrité, Vigilance, Serviabilité","Confiance, Courage, Respect, Vision à long terme","Loyauté, Discipline, Service","Sécurité, Ordre, Respect"], ans:1, explanation:"Les 4 valeurs SEM sont : Confiance, Courage, Respect, Vision à long terme." },
+
+  // MISSIONS AGENT
   { theme:"Missions agent", q:"Missions de l'agent sur site ?", opts:["Fouiller, surveiller, rapporter","Sécurité RA/collaborateurs, alerte, bon déroulement","Patrouiller, interpeller, arrêter","Accueillir, orienter, informer"], ans:1, explanation:"Les 3 missions : A) Assurer la sécurité des RA et des collaborateurs, B) Donner l'alerte en cas de besoin, C) Assurer le bon déroulement de la mission." },
+
+  // CONCEPT SÉCURITÉ
   { theme:"Concept sécurité", q:"Le chapitre 9 traite de :", opts:["Évacuation","Incidents","Agression","Gestion des RA"], ans:2, explanation:"Chapitre 9 = Agression (alarme feu, gaz, voies de fait, AMOK, menaces, prise d'otages, suicide, manifestations)." },
   { theme:"Concept sécurité", q:"Le chapitre 8 contient :", opts:["Liste agressions","Concept d'évacuation, place d'évacuation, sorties de secours, cheminements","Liste extincteurs","Numéros urgence"], ans:1, explanation:"Chapitre 8 = Concept d'évacuation : place d'évacuation pour les RA, sorties de secours, cheminements jusqu'à la place d'évacuation." },
+
+  // RESPONSABLES
   { theme:"Responsables", q:"Responsables sécurité du SEM ?", opts:["TAS Engin et SUKYART Sunti","Le directeur du CFA","Le RA en chef","La police cantonale"], ans:0, explanation:"Les responsables sécurité SEM sont : TAS Engin et SUKYART Sunti." },
+
+  // CHT
   { theme:"CHT", q:"CHT signifie :", opts:["Chambre d'Hébergement Temporaire","Centre Hôtelier Transitoire","Cellule Haute Tension","Chambre Habitable Tactique"], ans:0, explanation:"CHT = Chambre d'Hébergement Temporaire." },
 ];
 
-// MODE HARDCORE
 const QUESTIONS_HARD = [
+  // CODE PÉNAL
   { theme:"Code pénal", q:"Lequel correspond à l'État de nécessité licite ?", opts:["Art. 15 CP","Art. 17 CP","Art. 128 CP","Art. 218 CPP"], ans:1, explanation:"Art. 17 CP = État de nécessité licite. À ne pas confondre avec Art. 15 (Légitime défense) ou Art. 128 (Omission de secours)." },
   { theme:"Code pénal", q:"L'arrestation par des particuliers est régie par :", opts:["Art. 17 CP","Art. 218 CPP","Art. 128 CP","Art. 15 CP"], ans:1, explanation:"Art. 218 CPP = Arrestation par des particuliers. Permet d'arrêter en flagrant délit. C'est dans le Code de Procédure Pénale (CPP), pas dans le Code Pénal (CP)." },
   { theme:"Code pénal", q:"Lequel correspond à la Légitime Défense ?", opts:["Art. 15 CP","Art. 17 CP","Art. 128 CP","Art. 218 CPP"], ans:0, explanation:"Art. 15 CP = Légitime Défense. Droit de repousser une attaque imminente par des moyens proportionnés." },
   { theme:"Code pénal", q:"Lequel correspond à l'Omission de prêter secours ?", opts:["Art. 15 CP","Art. 17 CP","Art. 128 CP","Art. 218 CPP"], ans:2, explanation:"Art. 128 CP = Omission de prêter secours. Punit celui qui n'aide pas une personne en danger imminent de mort." },
+
+  // SALLE DE SÉCURITÉ
   { theme:"Salle de sécurité", q:"Combien de bases juridiques légitiment l'utilisation ?", opts:["1","2","3","4"], ans:2, explanation:"3 bases juridiques : Ordonnance Art.29a + Directive interne ch.4 + Garantie de la sécurité ch.2.3." },
   { theme:"Salle de sécurité", q:"Quel chapitre traite de la 'Garantie de la sécurité et de l'ordre' ?", opts:["ch. 2.3","ch. 4","ch. 8","Art. 29a"], ans:0, explanation:"Garantie de la sécurité et de l'ordre dans les centres fédéraux = chapitre 2.3." },
   { theme:"Salle de sécurité", q:"Chapitre 'Directive interne sur les activités sécurité' ?", opts:["ch. 2.3","ch. 4","Art. 29a","ch. 8"], ans:1, explanation:"Directive interne concernant les activités dans le domaine de la sécurité = chapitre 4." },
   { theme:"Salle de sécurité", q:"L'Ordonnance sur l'exploitation des centres fédéraux est l'Article :", opts:["Art. 17a","Art. 29a","Art. 218","Art. 15"], ans:1, explanation:"Art. 29a = Ordonnance sur l'exploitation des centres fédéraux. À ne pas confondre avec Art. 17 CP (État de nécessité)." },
   { theme:"Salle de sécurité", q:"Au-delà de combien de temps l'utilisation n'est plus autorisée ?", opts:["1h","2h","4h","6h"], ans:1, explanation:"Limite = 2 heures. Au-delà, l'utilisation de la salle de sécurité n'est plus autorisée." },
+
+  // PROPORTIONNALITÉ
   { theme:"Proportionnalité", q:"« Appropriée pour atteindre l'objectif visé » =", opts:["Adéquat","Nécessaire","Adapté","Proportionné"], ans:2, explanation:"C'est la définition d'Adapté. Adéquat = pas disproportionné. Nécessaire = la plus modérée." },
   { theme:"Proportionnalité", q:"« La plus modérée parmi les variantes » =", opts:["Adéquat","Nécessaire","Adapté","Légitime"], ans:1, explanation:"C'est la définition de Nécessaire. La mesure choisie doit toujours être la plus modérée parmi les options." },
   { theme:"Proportionnalité", q:"Adéquat veut dire :", opts:["Atteint l'objectif","Charge non disproportionnée","La plus modérée","Légale"], ans:1, explanation:"Adéquat = la charge ou restriction imposée à la personne ne doit pas être disproportionnée par rapport à l'objectif poursuivi." },
+
+  // ÉVACUATION
   { theme:"Évacuation", q:"Lequel NE PEUT PAS ordonner une évacuation ?", opts:["M. TAS","Le SSI SEM","Un RA","La direction du SEM"], ans:2, explanation:"Un RA ne peut PAS ordonner une évacuation. Peuvent l'ordonner : M. TAS, SSI SEM, direction du SEM, et les feux bleus (police, pompiers, ambulance)." },
   { theme:"Évacuation", q:"Les feux bleus peuvent-ils ordonner une évacuation ?", opts:["Non","Oui","Seulement police","Seulement pompiers"], ans:1, explanation:"Oui, les feux bleus (police, pompiers, ambulance) peuvent ordonner une évacuation." },
   { theme:"Évacuation", q:"Que contient SPÉCIFIQUEMENT le chapitre 8 ?", opts:["Liste agressions","Concept d'évacuation, places d'évacuation pour les RA, sorties de secours, cheminements","Numéros urgence","Procédures de fouille"], ans:1, explanation:"Chapitre 8 = Concept d'évacuation, places d'évacuation pour les RA, sorties de secours, cheminements jusqu'à la place d'évacuation." },
+
+  // NUMÉROS
   { theme:"Numéros", q:"Numéro anti-poison ?", opts:["117","144","145","1414"], ans:2, explanation:"145 = Anti-poison (Tox Info Suisse). 117 = Police, 144 = Ambulance, 1414 = REGA." },
   { theme:"Numéros", q:"Le 1414 correspond à :", opts:["Anti-poison","REGA","Police","Pompiers spéciaux"], ans:1, explanation:"1414 = REGA, la Garde aérienne suisse de sauvetage (intervention par hélicoptère)." },
   { theme:"Numéros", q:"Numéro complet du piquet SEM ?", opts:["058 644 00 00","058 464 00 00","044 464 00 00","058 446 00 00"], ans:1, explanation:"Le numéro du piquet SEM est 058 464 00 00. Attention à l'ordre des chiffres : 4-6-4." },
+
+  // EXTINCTEURS
   { theme:"Extincteurs", q:"Quelle classe couvre le pétrole et le fioul ?", opts:["A","B","C","D"], ans:1, explanation:"Classe B = Hydrocarbures liquides (Essence, Fioul, Pétrole). Classe A = Solides (bois/papier), C = Gaz, D = Métaux." },
   { theme:"Extincteurs", q:"Butane et propane = classe :", opts:["A","B","C","F"], ans:2, explanation:"Classe C = Gaz (Propane, Butane, Gaz naturel). À ne pas confondre avec B (hydrocarbures liquides)." },
   { theme:"Extincteurs", q:"Quelle classe est ABSENTE de la nomenclature suisse ?", opts:["A","D","E","F"], ans:2, explanation:"Pas de classe E dans la nomenclature suisse. Les classes existantes sont : A, B, C, D, F." },
   { theme:"Extincteurs", q:"Feux de métaux = classe :", opts:["B","C","D","F"], ans:2, explanation:"Classe D = Feux de métaux. À ne pas confondre avec F (huiles et graisses)." },
+
+  // CONCEPT SÉCURITÉ
   { theme:"Concept sécurité", q:"'Tuerie de masse / Folie meurtrière (AMOK)' est dans :", opts:["ch. 8","ch. 9","ch. 10","Hors chapitres"], ans:1, explanation:"AMOK = Chapitre 9 (Agression). Ce chapitre traite des situations d'agression : feu, gaz, voies de fait, AMOK, menaces, otages, suicide." },
   { theme:"Concept sécurité", q:"'Alerte à la bombe' est dans :", opts:["ch. 8","ch. 9","ch. 10","Aucun"], ans:2, explanation:"Alerte à la bombe = Chapitre 10 (Incidents). Ne pas confondre avec ch.9 (Agression)." },
   { theme:"Concept sécurité", q:"Le 'Vandalisme' est dans :", opts:["ch. 8","ch. 9","ch. 10","Hors chapitre"], ans:2, explanation:"Vandalisme = Chapitre 10 (Incidents)." },
@@ -201,21 +249,35 @@ const QUESTIONS_HARD = [
   { theme:"Concept sécurité", q:"'Tentatives de suicide' est dans :", opts:["ch. 8","ch. 9","ch. 10","Aucun"], ans:1, explanation:"Tentatives de suicide = Chapitre 9 (Agression)." },
   { theme:"Concept sécurité", q:"'Panne de courant' est dans :", opts:["ch. 8","ch. 9","ch. 10","Aucun"], ans:2, explanation:"Panne de courant = Chapitre 10 (Incidents)." },
   { theme:"Concept sécurité", q:"'Objet suspect' est dans :", opts:["ch. 8","ch. 9","ch. 10","ch. 11"], ans:2, explanation:"Objet suspect = Chapitre 10 (Incidents)." },
+
+  // 3D / ORA
   { theme:"Approche 3D", q:"Que signifie 'Désamorcer' ?", opts:["Couper le courant","Calmer/désamorcer la situation","Désarmer la personne","Appeler renforts"], ans:1, explanation:"Désamorcer = action de calmer/apaiser la situation avant escalade. C'est l'étape 2 de l'approche 3D (Dialoguer/Désamorcer/Défendre)." },
   { theme:"Phases d'engagement", q:"Phase la PLUS proche ?", opts:["Publique","Sociale","Personnelle","Intime"], ans:3, explanation:"La phase Intime est la plus proche. Ordre du plus proche au plus loin : Intime → Personnelle → Sociale → Publique." },
   { theme:"Phases d'engagement", q:"Quelle phase suit 'Personnelle' ?", opts:["Intime","Sociale","Publique","Privée"], ans:1, explanation:"Ordre des phases : Intime → Personnelle → Sociale → Publique. Donc après Personnelle vient Sociale." },
+
+  // MESURES DISCIPLINAIRES
   { theme:"Mesures disciplinaires", q:"Quelle est la durée maximale de l'assignation à un centre spécifique ?", opts:["12h","24h","48h","1 semaine"], ans:1, explanation:"Durée maximale d'assignation = 24 heures." },
   { theme:"Mesures disciplinaires", q:"Lequel n'est PAS une mesure disciplinaire ?", opts:["Refus argent de poche","Exclusion centre","Confiscation téléphone","Assignation centre spécifique"], ans:2, explanation:"La confiscation du téléphone n'est pas listée. Mesures officielles : refus d'argent de poche, exclusion du centre, assignation à un centre spécifique." },
+
+  // CHT / PLEX
   { theme:"CHT", q:"CHT signifie :", opts:["Chambre d'Hébergement Temporaire","Centre Hôtelier Transitoire","Cellule Haute Tension","Chambre Habitable Tactique"], ans:0, explanation:"CHT = Chambre d'Hébergement Temporaire." },
   { theme:"PLEX", q:"PLEX signifie :", opts:["Plan Logistique Externe","Plan d'Exploitation Hébergement","Procédure Légale d'Évacuation","Plan Local d'Évacuation"], ans:1, explanation:"PLEX = Plan d'Exploitation Hébergement." },
-  { theme:"Valeurs", q:"« Vision à long terme » =", opts:["Protectas","SEM","Les deux","Aucun"], ans:1, explanation:"Vision à long terme = SEM (avec Confiance, Courage, Respect). Protectas = Intégrité, Vigilance, Fiabilité." },
-  { theme:"Valeurs", q:"« Fiabilité » =", opts:["Protectas","SEM","Les deux","Aucun"], ans:0, explanation:"Fiabilité = Protectas (avec Intégrité et Vigilance). Pas SEM." },
+
+  // VALEURS — CORRIGÉES !
+  { theme:"Valeurs", q:"« Vision à long terme » =", opts:["Protectas","SEM","Les deux","Aucun"], ans:1, explanation:"Vision à long terme = SEM (avec Confiance, Courage, Respect). Protectas = Intégrité, Vigilance, Serviabilité." },
+  { theme:"Valeurs", q:"« Serviabilité » =", opts:["Protectas","SEM","Les deux","Aucun"], ans:0, explanation:"Serviabilité = Protectas (avec Intégrité et Vigilance). Pas SEM." },
   { theme:"Valeurs", q:"Total Protectas + SEM ?", opts:["5","6","7","8"], ans:2, explanation:"7 valeurs au total : Protectas (3) + SEM (4) = 7." },
   { theme:"Valeurs", q:"« Courage » =", opts:["Protectas","SEM","Les deux","Aucun"], ans:1, explanation:"Courage = SEM (avec Confiance, Respect, Vision à long terme)." },
-  { theme:"Valeurs", q:"« Vigilance » =", opts:["Protectas","SEM","Les deux","Aucun"], ans:0, explanation:"Vigilance = Protectas (avec Intégrité et Fiabilité)." },
+  { theme:"Valeurs", q:"« Vigilance » =", opts:["Protectas","SEM","Les deux","Aucun"], ans:0, explanation:"Vigilance = Protectas (avec Intégrité et Serviabilité)." },
   { theme:"Valeurs", q:"« Respect » =", opts:["Protectas","SEM","Les deux","Aucun"], ans:1, explanation:"Respect = SEM (avec Confiance, Courage, Vision à long terme)." },
+  { theme:"Valeurs", q:"« Intégrité » =", opts:["Protectas","SEM","Les deux","Aucun"], ans:0, explanation:"Intégrité = Protectas (avec Vigilance et Serviabilité)." },
+  { theme:"Valeurs", q:"« Confiance » =", opts:["Protectas","SEM","Les deux","Aucun"], ans:1, explanation:"Confiance = SEM (avec Courage, Respect, Vision à long terme)." },
+
+  // RESPONSABLES
   { theme:"Responsables", q:"Prénom de SUKYART ?", opts:["Engin","Sunti","Tas","Pres"], ans:1, explanation:"SUKYART Sunti. Engin est le prénom de TAS." },
   { theme:"Responsables", q:"Qui est M. TAS ?", opts:["Directeur SEM","Responsable sécurité SEM","Agent Protectas","Médecin"], ans:1, explanation:"M. TAS Engin = responsable sécurité SEM (avec SUKYART Sunti)." },
+
+  // COULEURS
   { theme:"Couleurs mentales", q:"Quelle couleur = 'en pause' ?", opts:["Vert","Jaune","Rouge","Bleu"], ans:0, explanation:"Vert = Normal, en sécurité, en pause. État de repos." },
   { theme:"Couleurs mentales", q:"Combien de couleurs de préparation mentale ?", opts:["2","3","4","5"], ans:1, explanation:"3 couleurs de préparation mentale : Vert (normal), Jaune (attentif), Rouge (alarme)." },
 ];
