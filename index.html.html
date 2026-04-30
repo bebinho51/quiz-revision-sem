@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz SEM Protectas — Révisions</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: #f5f5f3;
+    color: #1a1a1a;
+    min-height: 100vh;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+  }
+  #app {
+    width: 100%;
+    max-width: 700px;
+    background: #fff;
+    border-radius: 16px;
+    padding: 32px 28px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+  }
+  h1 { font-size: 24px; font-weight: 600; margin-bottom: 8px; }
+  .subtitle { color: #6b6b6b; font-size: 14px; margin-bottom: 24px; }
+  .menu-btn {
+    display: block;
+    width: 100%;
+    padding: 16px;
+    margin-bottom: 12px;
+    background: #fff;
+    border: 1.5px solid #e5e5e3;
+    border-radius: 12px;
+    font-size: 15px;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: #1a1a1a;
+    font-family: inherit;
+  }
+  .menu-btn:hover { border-color: #185FA5; background: #f8fbff; }
+  .menu-btn.hard { border-color: #f0c4c4; }
+  .menu-btn.hard:hover { border-color: #A32D2D; background: #fff5f5; }
+  .menu-btn b { display: block; font-size: 16px; margin-bottom: 4px; }
+  .menu-btn span { color: #6b6b6b; font-size: 13px; }
+  .difficulty-badge {
+    display: inline-block; font-size: 11px; padding: 3px 10px;
+    border-radius: 99px; background: #FCEBEB; color: #501313;
+    margin-bottom: 12px; font-weight: 500; letter-spacing: 0.5px;
+  }
+  .difficulty-badge.easy { background: #E6F1FB; color: #0C447C; }
+  .progress-bar-bg { background: #f0f0ee; border-radius: 99px; height: 6px; margin-bottom: 8px; }
+  .progress-bar-fill { background: #185FA5; height: 6px; border-radius: 99px; transition: width 0.4s; }
+  .progress-bar-fill.hard { background: #A32D2D; }
+  .meta { display: flex; justify-content: space-between; font-size: 13px; color: #6b6b6b; margin-bottom: 20px; }
+  .question-card {
+    background: #fff;
+    border: 1px solid #e5e5e3;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 12px;
+  }
+  .theme-badge {
+    display: inline-block; font-size: 11px; padding: 3px 10px;
+    border-radius: 99px; background: #E6F1FB; color: #0C447C;
+    margin-bottom: 12px; font-weight: 500;
+  }
+  .question-text {
+    font-size: 16px; font-weight: 500;
+    line-height: 1.5; margin-bottom: 16px;
+  }
+  .options { display: flex; flex-direction: column; gap: 8px; }
+  .opt-btn {
+    text-align: left; background: #f8f8f6;
+    border: 1px solid #e5e5e3;
+    border-radius: 8px; padding: 12px 14px;
+    font-size: 14px; color: #1a1a1a; cursor: pointer;
+    transition: all 0.15s; font-family: inherit;
+  }
+  .opt-btn:hover:not(:disabled) { background: #f0f0ee; border-color: #c5c5c3; }
+  .opt-btn.correct { background: #EAF3DE; border-color: #639922; color: #27500A; }
+  .opt-btn.wrong { background: #FCEBEB; border-color: #A32D2D; color: #501313; }
+  .opt-btn.reveal { background: #EAF3DE; border-color: #639922; color: #27500A; }
+  .opt-btn:disabled { cursor: default; }
+  .feedback {
+    margin-top: 12px; padding: 12px;
+    border-radius: 8px; font-size: 13px; line-height: 1.5;
+  }
+  .feedback.good { background: #EAF3DE; color: #27500A; border-left: 3px solid #639922; }
+  .feedback.bad { background: #FCEBEB; color: #501313; border-left: 3px solid #A32D2D; }
+  .next-btn {
+    margin-top: 16px; width: 100%; padding: 12px;
+    border-radius: 8px; background: #185FA5;
+    color: #fff; border: none; font-size: 14px;
+    font-weight: 500; cursor: pointer; font-family: inherit;
+  }
+  .next-btn:hover { background: #0C447C; }
+  .next-btn.hard { background: #A32D2D; }
+  .next-btn.hard:hover { background: #791F1F; }
+  .score-card {
+    background: #fff; border: 1px solid #e5e5e3;
+    border-radius: 12px; padding: 32px;
+    text-align: center;
+  }
+  .score-big { font-size: 56px; font-weight: 600; }
+  .score-label { font-size: 15px; color: #6b6b6b; margin: 8px 0 16px; }
+  .score-msg { font-size: 15px; margin-bottom: 24px; line-height: 1.5; }
+  .btn-row { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+  .restart-btn {
+    padding: 12px 24px; border-radius: 8px;
+    background: #185FA5; color: #fff;
+    border: none; font-size: 14px; font-weight: 500;
+    cursor: pointer; font-family: inherit;
+  }
+  .restart-btn:hover { background: #0C447C; }
+  .restart-btn.secondary {
+    background: #fff; color: #1a1a1a; border: 1px solid #e5e5e3;
+  }
+  .restart-btn.secondary:hover { background: #f8f8f6; }
+  .back-link {
+    display: inline-block; margin-top: 12px;
+    color: #185FA5; font-size: 13px;
+    text-decoration: none; cursor: pointer;
+  }
+  .back-link:hover { text-decoration: underline; }
+  @media (max-width: 600px) {
+    body { padding: 12px; }
+    #app { padding: 20px 16px; }
+    h1 { font-size: 20px; }
+    .question-text { font-size: 15px; }
+  }
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+// BANQUE DE QUESTIONS — TOUTES VÉRIFIÉES SUR LES FICHES
+// ═══════════════════════════════════════════════════════════
+
+// MODE NORMAL
+const QUESTIONS_NORMAL = [
+  // PARADES (vérifiées sur fiche IMG_4537)
+  { theme:"Parades", q:"Quelle action correspond à la parade haute ?", opts:["Parade à une main vers l'extérieur","Parade à 2 mains vers le haut","Parade à 2 mains vers le bas","Parade à une main"], ans:1, ok:"Exact ! Parade haute = 2 mains vers le haut (protège tête d'un coup d'en haut).", ko:"Non. Parade haute = 2 mains vers le haut." },
+  { theme:"Parades", q:"La parade sur coup de poing direct s'effectue comment ?", opts:["Parade à 2 mains vers le haut","Parade à 2 mains vers le bas","Parade à une main","Parade à une main vers l'extérieur"], ans:2, ok:"Correct ! Coup de poing direct → parade à une main.", ko:"Non. Coup de poing direct au visage = parade à une main." },
+  { theme:"Parades", q:"Objectif de la parade sur uppercut ?", opts:["Protéger les jambes","Protéger la tête d'un coup latéral","Protéger la tête d'un coup venant d'en bas","Protéger les parties génitales"], ans:2, ok:"Parfait ! Uppercut vient d'en bas, parade 2 mains vers le bas (milieu thorax).", ko:"Non. Uppercut = coup venant d'en bas, on protège la tête." },
+  { theme:"Parades", q:"La parade contre coup de pied frontal protège :", opts:["La tête","Le visage","Les jambes et parties génitales","Le torse"], ans:2, ok:"Bien ! Coup de pied frontal → jambes et parties génitales.", ko:"Non. Cette parade protège jambes et parties génitales." },
+  { theme:"Parades", q:"Parade sur coup de poing en crochet :", opts:["2 mains vers le haut","Une main vers l'extérieur","2 mains vers le bas","Une main directe"], ans:1, ok:"Correct ! Crochet = parade une main vers l'extérieur.", ko:"Non. Crochet vient du côté → une main vers l'extérieur." },
+
+  // CLÉS (vérifiées sur fiche IMG_4538)
+  { theme:"Clés", q:"La clé d'escorte sert à :", opts:["Mettre au sol","Contrôler résistance active","Contrôler résistance passive et déplacer","Immobiliser au sol"], ans:2, ok:"Correct ! Escorte = passive + déplacement.", ko:"Non. Clé d'escorte = résistance passive + déplacement." },
+  { theme:"Clés", q:"Quelle clé utilise un 'enroulement de l'épaule' ?", opts:["Clé de poignet","Clé d'escorte","Clé de coude","Clé d'épaule"], ans:3, ok:"Exact ! Clé d'épaule = enroulement de l'épaule.", ko:"Non. C'est la clé d'épaule." },
+  { theme:"Clés", q:"La clé de poignet (bec de cane) est utilisée pour :", opts:["Résistance passive","Résistance active","Déplacer sans contact","Mettre au sol"], ans:1, ok:"Bien ! Bec de cane = résistance active.", ko:"Non. Clé de poignet/bec de cane = résistance active." },
+  { theme:"Clés", q:"Clé de coude amenée au sol en rotation :", opts:["Résistance passive","Mettre au sol et contrôler résistance active","Déplacer une personne consciente","Immobiliser un objet"], ans:1, ok:"Correct ! Sol + contrôle résistance active.", ko:"Non. Mettre au sol et contrôler une résistance active." },
+
+  // CODE PÉNAL (vérifié sur fiche IMG_4539)
+  { theme:"Code pénal", q:"Article 15 CP ?", opts:["Omission de prêter secours","Légitime défense","État de nécessité licite","Arrestation"], ans:1, ok:"Parfait ! Art. 15 CP = Légitime Défense.", ko:"Non. Art. 15 CP = Légitime Défense." },
+  { theme:"Code pénal", q:"L'article 128 CP correspond à :", opts:["Légitime défense","Meurtre","Omission de prêter secours","Voies de fait"], ans:2, ok:"Correct ! Art. 128 CP = Omission de prêter secours.", ko:"Non. Art. 128 CP = Omission de prêter secours." },
+  { theme:"Code pénal", q:"L'article 17 CP c'est :", opts:["Légitime défense","État de nécessité licite","Arrestation","Voies de fait"], ans:1, ok:"Exact ! Art. 17 CP = État de nécessité licite.", ko:"Non. Art. 17 CP = État de nécessité licite." },
+  { theme:"Code pénal", q:"L'article 200 CPP traite de :", opts:["Prise d'otages","Usage de la force","Diffamation","Appropriation illégitime"], ans:1, ok:"Bien ! Art. 200 CPP = Usage de la force.", ko:"Non. Art. 200 CPP = Usage de la force." },
+  { theme:"Code pénal", q:"L'article 126 CP correspond à :", opts:["Lésions graves","Voies de fait","Meurtre","Vol"], ans:1, ok:"Exact ! Art. 126 CP = Voies de fait.", ko:"Non. Art. 126 CP = Voies de fait." },
+  { theme:"Code pénal", q:"L'article 139 CP c'est :", opts:["Vol","Brigandage","Escroquerie","Abus de confiance"], ans:0, ok:"Correct ! Art. 139 CP = Vol.", ko:"Non. Art. 139 CP = Vol." },
+
+  // SALLE DE SÉCURITÉ (vérifié sur fiche IMG_4536 et IMG_4540)
+  { theme:"Salle de sécurité", q:"Quand est-il permis d'utiliser la salle de sécurité ?", opts:["Personne agitée","Sur ordre police","Danger grave + mesures moins sévères inefficaces","Toujours"], ans:2, ok:"Parfait ! Deux conditions cumulatives.", ko:"Non. Danger grave ET mesures moins sévères inefficaces." },
+  { theme:"Salle de sécurité", q:"Qui faut-il contacter AVANT ?", opts:["Uniquement SEM","Police ET SEM ou PreSec","Le médecin","Le RA"], ans:1, ok:"Correct ! Police + SEM/PreSec.", ko:"Non. Police ET SEM ou PreSec." },
+  { theme:"Salle de sécurité", q:"Dans quel cas ce n'est PLUS autorisé ?", opts:["Plus de 30 min","Personne calmée OU > 2h OU police quitte CFA","Si la personne dort","Jamais"], ans:1, ok:"Exact ! 3 cas d'arrêt.", ko:"Non. 3 cas : calmée, > 2h, ou police quitte CFA." },
+  { theme:"Salle de sécurité", q:"Quelle base juridique légitime ?", opts:["Code pénal Art. 50","Ordonnance centres fédéraux Art. 29a","Loi police","Convention Genève"], ans:1, ok:"Correct ! Ordonnance Art. 29a.", ko:"Non. Ordonnance sur l'exploitation des centres fédéraux Art. 29a." },
+
+  // PROPORTIONNALITÉ (vérifié sur fiche IMG_4541)
+  { theme:"Proportionnalité", q:"Que signifie 'Adéquat' ?", opts:["La plus modérée","Appropriée pour atteindre l'objectif","Charge non disproportionnée par rapport à l'objectif","Rapide"], ans:2, ok:"Exact ! Charge non disproportionnée.", ko:"Non. Adéquat = charge non disproportionnée par rapport à l'objectif." },
+  { theme:"Proportionnalité", q:"Que signifie 'Nécessaire' ?", opts:["Urgente","La plus modérée parmi les variantes","Atteint l'objectif","Approuvée par SEM"], ans:1, ok:"Parfait ! La plus modérée.", ko:"Non. Nécessaire = la plus modérée parmi les variantes possibles." },
+  { theme:"Proportionnalité", q:"Que signifie 'Adapté' ?", opts:["Rapide","Appropriée pour atteindre l'objectif visé","Légale","Modérée"], ans:1, ok:"Correct !", ko:"Non. Adapté = appropriée pour atteindre l'objectif visé." },
+
+  // 3D / ORA (vérifié IMG_4533)
+  { theme:"Approche 3D", q:"Que signifie l'approche 3D ?", opts:["Discuter/Décider/Défendre","Dialoguer/Désamorcer/Défendre","Détecter/Désamorcer/Défendre","Dialoguer/Décider/Diriger"], ans:1, ok:"Exact !", ko:"Non. 3D = Dialoguer / Désamorcer / Défendre." },
+  { theme:"ORA", q:"Que signifie ORA ?", opts:["Ordonner/Répondre/Agir","Observer/Réfléchir/Agir","Observer/Réagir/Alerter","Orienter/Répondre/Apaiser"], ans:1, ok:"Correct !", ko:"Non. ORA = Observer / Réfléchir / Agir." },
+  { theme:"Phases d'engagement", q:"Quelles sont les 4 phases d'engagement ?", opts:["Proche/Moyenne/Lointaine/Extrême","Intime/Personnelle/Sociale/Publique","Agressive/Neutre/Calme/Distante","Directe/Indirecte/Sociale/Légale"], ans:1, ok:"Exact !", ko:"Non. Intime / Personnelle / Sociale / Publique." },
+
+  // ÉVACUATION (vérifié IMG_4532)
+  { theme:"Évacuation", q:"Un RA peut-il ordonner une évacuation ?", opts:["Oui en urgence","Oui si accompagné","Non","Seulement de nuit"], ans:2, ok:"Correct ! Un RA ne peut PAS ordonner.", ko:"Non. Un RA ne peut PAS ordonner une évacuation." },
+  { theme:"Évacuation", q:"Numéro du piquet SEM ?", opts:["058 123 00 00","058 464 00 00","058 200 10 10","044 464 00 00"], ans:1, ok:"Exact !", ko:"Non. Piquet SEM = 058 464 00 00." },
+  { theme:"PLEX", q:"Que signifie PLEX ?", opts:["Plan d'Évacuation Express","Plan d'Exploitation Hébergement","Plan Logistique Externe","Procédure Légale d'Évacuation"], ans:1, ok:"Correct !", ko:"Non. PLEX = Plan d'Exploitation Hébergement." },
+
+  // NUMÉROS (vérifié IMG_4532 et IMG_4539)
+  { theme:"Numéros", q:"Numéro de la police en Suisse ?", opts:["118","144","117","145"], ans:2, ok:"Parfait ! 117.", ko:"Non. Police = 117." },
+  { theme:"Numéros", q:"Le 144 correspond à :", opts:["Police","Pompiers","Ambulance","Anti-poison"], ans:2, ok:"Correct !", ko:"Non. 144 = Ambulance." },
+  { theme:"Numéros", q:"REGA correspond à quel numéro ?", opts:["1414","145","144","118"], ans:0, ok:"Exact !", ko:"Non. REGA = 1414." },
+  { theme:"Numéros", q:"Le 145 correspond à :", opts:["Pompiers","Police","Anti-poison","REGA"], ans:2, ok:"Exact !", ko:"Non. 145 = Anti-poison." },
+
+  // EXTINCTEURS (vérifié IMG_4532)
+  { theme:"Extincteurs", q:"Catégorie d'extincteur pour Bois/Papier/Tissu ?", opts:["B","C","A","F"], ans:2, ok:"Correct !", ko:"Non. Catégorie A = Bois/Papier/Tissu." },
+  { theme:"Extincteurs", q:"La catégorie F couvre :", opts:["Gaz","Métaux","Huiles et graisses","Bois"], ans:2, ok:"Exact !", ko:"Non. Catégorie F = Huiles et graisses." },
+  { theme:"Extincteurs", q:"La catégorie C couvre :", opts:["Bois","Hydrocarbures","Gaz (Propane/Butane/Gaz naturel)","Métaux"], ans:2, ok:"Correct !", ko:"Non. Catégorie C = Gaz." },
+  { theme:"Extincteurs", q:"Catégorie B = ?", opts:["Bois/Papier","Essence/Fioul/Pétrole","Gaz","Métaux"], ans:1, ok:"Exact !", ko:"Non. B = Hydrocarbures (Essence/Fioul/Pétrole)." },
+  { theme:"Extincteurs", q:"Catégorie D = ?", opts:["Huiles","Métaux","Gaz","Bois"], ans:1, ok:"Exact !", ko:"Non. D = Métaux." },
+
+  // TRIANGLE DU FEU (vérifié IMG_4532)
+  { theme:"Triangle du feu", q:"3 éléments du triangle du feu ?", opts:["Chaleur/Oxygène/Carburant","Chaleur/Combustible/Comburant","Feu/Air/Matière","Énergie/Fuel/Oxydant"], ans:1, ok:"Parfait !", ko:"Non. Chaleur / Combustible / Comburant." },
+
+  // COULEURS MENTALES (vérifié IMG_4531)
+  { theme:"Couleurs mentales", q:"Couleur jaune signifie :", opts:["Normal","Alarme","Attentif","Pause"], ans:2, ok:"Exact !", ko:"Non. Jaune = Attentif." },
+  { theme:"Couleurs mentales", q:"Couleur rouge signifie :", opts:["Normal","Attentif","Pause","En état d'alarme"], ans:3, ok:"Parfait !", ko:"Non. Rouge = En état d'alarme." },
+  { theme:"Couleurs mentales", q:"Couleur verte signifie :", opts:["Attentif","Alarme","Normal, en sécurité, en pause","Danger"], ans:2, ok:"Correct !", ko:"Non. Vert = Normal, en sécurité, en pause." },
+
+  // VALEURS (vérifié IMG_4535)
+  { theme:"Valeurs Protectas", q:"Valeurs PROTECTAS ?", opts:["Confiance, Courage, Respect, Vision LT","Intégrité, Vigilance, Fiabilité","Intégrité, Courage, Fiabilité, Respect","Vigilance, Confiance, Respect"], ans:1, ok:"Exact !", ko:"Non. Protectas = Intégrité, Vigilance, Fiabilité." },
+  { theme:"Valeurs SEM", q:"Valeurs du SEM ?", opts:["Intégrité, Vigilance, Fiabilité","Confiance, Courage, Respect, Vision à long terme","Loyauté, Discipline, Service","Sécurité, Ordre, Respect"], ans:1, ok:"Parfait !", ko:"Non. SEM = Confiance, Courage, Respect, Vision à long terme." },
+
+  // MISSIONS AGENT (vérifié IMG_4530)
+  { theme:"Missions agent", q:"Missions de l'agent sur site ?", opts:["Fouiller, surveiller, rapporter","Sécurité RA/collaborateurs, alerte, bon déroulement","Patrouiller, interpeller, arrêter","Accueillir, orienter, informer"], ans:1, ok:"Exact !", ko:"Non. A) Sécurité RA/collaborateurs B) Alerte C) Bon déroulement." },
+
+  // CONCEPT SÉCURITÉ (vérifié IMG_4530, IMG_4531)
+  { theme:"Concept sécurité", q:"Le chapitre 9 traite de :", opts:["Évacuation","Incidents","Agression","Gestion des RA"], ans:2, ok:"Correct !", ko:"Non. Chapitre 9 = Agression." },
+  { theme:"Concept sécurité", q:"Le chapitre 8 contient :", opts:["Liste agressions","Concept d'évacuation, place d'évacuation, sorties de secours, cheminements","Liste extincteurs","Numéros urgence"], ans:1, ok:"Exact !", ko:"Non. Chapitre 8 = concept d'évacuation." },
+
+  // RESPONSABLES (vérifié IMG_4539)
+  { theme:"Responsables", q:"Responsables sécurité du SEM ?", opts:["TAS Engin et SUKYART Sunti","Le directeur du CFA","Le RA en chef","La police cantonale"], ans:0, ok:"Exact !", ko:"Non. TAS Engin et SUKYART Sunti." },
+
+  // CHT (vérifié IMG_4533)
+  { theme:"CHT", q:"CHT signifie :", opts:["Chambre d'Hébergement Temporaire","Centre Hôtelier Transitoire","Cellule Haute Tension","Chambre Habitable Tactique"], ans:0, ok:"Exact !", ko:"Non. CHT = Chambre d'Hébergement Temporaire." },
+];
+
+// MODE HARDCORE (sans parades ni clés)
+const QUESTIONS_HARD = [
+  // CODE PÉNAL — pièges sur articles
+  { theme:"Code pénal", q:"Lequel correspond à l'État de nécessité licite ?", opts:["Art. 15 CP","Art. 17 CP","Art. 128 CP","Art. 200 CPP"], ans:1, ok:"Exact. Art. 17 CP.", ko:"Faux. Art. 17 CP. (15 = Légitime défense, 128 = Omission)" },
+  { theme:"Code pénal", q:"L'arrestation par des particuliers est régie par :", opts:["Art. 200 CPP","Art. 218 CPP","Art. 17 CP","Art. 15 CP"], ans:1, ok:"Exact. Art. 218 CPP.", ko:"Faux. Art. 218 CPP = Arrestation par des particuliers." },
+  { theme:"Code pénal", q:"Différence entre Art. 122 CP et Art. 123 CP ?", opts:["122 = simples / 123 = graves","122 = graves / 123 = simples","122 = négligence / 123 = mutilation","Aucune"], ans:1, ok:"Exact. 122 = GRAVES, 123 = SIMPLES.", ko:"Faux. Art. 122 = GRAVES, Art. 123 = SIMPLES." },
+  { theme:"Code pénal", q:"Quel article concerne la mutilation ?", opts:["Art. 122 CP","Art. 124 CP","Art. 125 CP","Art. 126 CP"], ans:1, ok:"Exact. Art. 124 CP.", ko:"Faux. Art. 124 CP = Mutilation." },
+  { theme:"Code pénal", q:"Différence Vol/Brigandage/Escroquerie ?", opts:["Tous synonymes","139 = Vol, 140 = Brigandage, 146 = Escroquerie","139 = violence, 146 = sans","Tous régis par 139"], ans:1, ok:"Exact.", ko:"Faux. 139 = Vol, 140 = Brigandage, 146 = Escroquerie." },
+  { theme:"Code pénal", q:"L'Art. 181 CP correspond à :", opts:["Menaces","Contraintes","Séquestration","Prise d'otage"], ans:1, ok:"Exact. Art. 181 = Contraintes.", ko:"Faux. Art. 181 = Contraintes." },
+  { theme:"Code pénal", q:"L'Art. 180 CP correspond à :", opts:["Menaces","Contraintes","Vol","Voies de fait"], ans:0, ok:"Exact. Art. 180 = Menaces.", ko:"Faux. Art. 180 = Menaces." },
+  { theme:"Code pénal", q:"L'Art. 184 CP correspond à :", opts:["Menaces","Séquestration et enlèvement","Prise d'otage","Calomnie"], ans:1, ok:"Exact.", ko:"Faux. Art. 184 = Séquestration et enlèvement." },
+  { theme:"Code pénal", q:"L'Art. 186 CP correspond à :", opts:["Prise d'otage","Violation de domicile","Diffamation","Calomnie"], ans:1, ok:"Exact.", ko:"Faux. Art. 186 = Violation de domicile." },
+  { theme:"Code pénal", q:"L'Art. 174 CP correspond à :", opts:["Calomnie","Diffamation","Injure","Menaces"], ans:0, ok:"Exact. Art. 174 = Calomnie.", ko:"Faux. Art. 174 = Calomnie." },
+  { theme:"Code pénal", q:"L'Art. 177 CP correspond à :", opts:["Calomnie","Diffamation","Injure","Menaces"], ans:2, ok:"Exact. Art. 177 = Injure.", ko:"Faux. Art. 177 = Injure." },
+  { theme:"Code pénal", q:"L'Art. 137 CP correspond à :", opts:["Vol","Appropriation illégitime","Abus de confiance","Brigandage"], ans:1, ok:"Exact.", ko:"Faux. Art. 137 = Appropriation illégitime." },
+  { theme:"Code pénal", q:"L'Art. 138 CP correspond à :", opts:["Vol","Brigandage","Abus de confiance","Usure"], ans:2, ok:"Exact.", ko:"Faux. Art. 138 = Abus de confiance." },
+  { theme:"Code pénal", q:"L'Art. 152 CP correspond à :", opts:["Vol","Escroquerie","Usure","Calomnie"], ans:2, ok:"Exact. Art. 152 = Usure.", ko:"Faux. Art. 152 = Usure." },
+  { theme:"Code pénal", q:"L'Art. 111 CP correspond à :", opts:["Lésions graves","Meurtre","Voies de fait","Brigandage"], ans:1, ok:"Exact. Art. 111 = Meurtre.", ko:"Faux. Art. 111 = Meurtre (la vie)." },
+  { theme:"Code pénal", q:"Lequel n'est PAS un bien juridique protégé ?", opts:["La vie","La sphère privée","Les opinions politiques","Les animaux"], ans:2, ok:"Exact.", ko:"Faux. Biens : vie, intégrité, liberté, patrimoine, honneur, sphère privée, animaux." },
+  { theme:"Code pénal", q:"L'Art. 26 LPA traite de :", opts:["Vol","Mauvais traitements aux animaux","Escroquerie","Diffamation"], ans:1, ok:"Exact.", ko:"Faux. Art. 26 LPA = Mauvais traitements aux animaux." },
+  { theme:"Code pénal", q:"L'usage de la force selon Art. 200 CPP doit respecter :", opts:["L'ordre du supérieur","Le principe de proportionnalité","La volonté de l'arrêté","La rapidité"], ans:1, ok:"Exact.", ko:"Faux. Principe de proportionnalité." },
+
+  // SALLE DE SÉCURITÉ — pièges sur les références juridiques
+  { theme:"Salle de sécurité", q:"Combien de bases juridiques légitiment l'utilisation ?", opts:["1","2","3","4"], ans:2, ok:"Exact. 3 bases.", ko:"Faux. 3 : Ordonnance Art.29a + Directive ch.4 + Garantie ch.2.3." },
+  { theme:"Salle de sécurité", q:"Quel chapitre traite de la 'Garantie de la sécurité et de l'ordre' ?", opts:["ch. 2.3","ch. 4","ch. 8","Art. 29a"], ans:0, ok:"Exact. ch. 2.3.", ko:"Faux. Garantie sécurité = ch. 2.3." },
+  { theme:"Salle de sécurité", q:"Chapitre 'Directive interne sur les activités sécurité' ?", opts:["ch. 2.3","ch. 4","Art. 29a","ch. 8"], ans:1, ok:"Exact. ch. 4.", ko:"Faux. Directive interne = ch. 4." },
+  { theme:"Salle de sécurité", q:"L'Ordonnance sur l'exploitation des centres fédéraux est l'Article :", opts:["Art. 17a","Art. 29a","Art. 200","Art. 218"], ans:1, ok:"Exact.", ko:"Faux. Art. 29a." },
+  { theme:"Salle de sécurité", q:"Au-delà de combien de temps l'utilisation n'est plus autorisée ?", opts:["1h","2h","4h","6h"], ans:1, ok:"Exact. 2h.", ko:"Faux. 2 heures." },
+
+  // PROPORTIONNALITÉ — pièges
+  { theme:"Proportionnalité", q:"« Appropriée pour atteindre l'objectif visé » =", opts:["Adéquat","Nécessaire","Adapté","Proportionné"], ans:2, ok:"Exact. Adapté.", ko:"Faux. Adapté." },
+  { theme:"Proportionnalité", q:"« La plus modérée parmi les variantes » =", opts:["Adéquat","Nécessaire","Adapté","Légitime"], ans:1, ok:"Exact. Nécessaire.", ko:"Faux. Nécessaire." },
+  { theme:"Proportionnalité", q:"Adéquat veut dire :", opts:["Atteint l'objectif","Charge non disproportionnée","La plus modérée","Légale"], ans:1, ok:"Exact.", ko:"Faux. Charge non disproportionnée." },
+
+  // ÉVACUATION — pièges
+  { theme:"Évacuation", q:"Lequel NE PEUT PAS ordonner une évacuation ?", opts:["M. TAS","Le SSI SEM","Un RA","La direction du SEM"], ans:2, ok:"Exact. Un RA NON.", ko:"Faux. Un RA ne peut pas ordonner une évacuation." },
+  { theme:"Évacuation", q:"Les feux bleus peuvent-ils ordonner une évacuation ?", opts:["Non","Oui","Seulement police","Seulement pompiers"], ans:1, ok:"Exact.", ko:"Faux. OUI, les feux bleus peuvent." },
+  { theme:"Évacuation", q:"Que contient SPÉCIFIQUEMENT le chapitre 8 ?", opts:["Liste agressions","Concept d'évacuation, places d'évacuation pour les RA, sorties de secours, cheminements","Numéros urgence","Procédures de fouille"], ans:1, ok:"Exact.", ko:"Faux. Concept d'évacuation + places + sorties + cheminements." },
+
+  // NUMÉROS
+  { theme:"Numéros", q:"Numéro anti-poison ?", opts:["117","144","145","1414"], ans:2, ok:"Exact. 145.", ko:"Faux. 145 = Anti-poison." },
+  { theme:"Numéros", q:"Le 1414 correspond à :", opts:["Anti-poison","REGA","Police","Pompiers spéciaux"], ans:1, ok:"Exact.", ko:"Faux. 1414 = REGA." },
+  { theme:"Numéros", q:"Numéro complet du piquet SEM ?", opts:["058 644 00 00","058 464 00 00","044 464 00 00","058 446 00 00"], ans:1, ok:"Exact.", ko:"Faux. 058 464 00 00." },
+
+  // EXTINCTEURS — pièges
+  { theme:"Extincteurs", q:"Quelle classe couvre le pétrole et le fioul ?", opts:["A","B","C","D"], ans:1, ok:"Exact. B.", ko:"Faux. B = Hydrocarbures." },
+  { theme:"Extincteurs", q:"Butane et propane = classe :", opts:["A","B","C","F"], ans:2, ok:"Exact. C.", ko:"Faux. C = Gaz." },
+  { theme:"Extincteurs", q:"Quelle classe est ABSENTE de la nomenclature suisse ?", opts:["A","D","E","F"], ans:2, ok:"Exact. Pas de classe E.", ko:"Faux. Pas de classe E. Classes : A, B, C, D, F." },
+  { theme:"Extincteurs", q:"Feux de métaux = classe :", opts:["B","C","D","F"], ans:2, ok:"Exact. D.", ko:"Faux. D = Métaux." },
+
+  // CONCEPT SÉCURITÉ — pièges sur les chapitres
+  { theme:"Concept sécurité", q:"'Tuerie de masse / Folie meurtrière (AMOK)' est dans :", opts:["ch. 8","ch. 9","ch. 10","Hors chapitres"], ans:1, ok:"Exact. ch. 9.", ko:"Faux. AMOK = ch. 9." },
+  { theme:"Concept sécurité", q:"'Alerte à la bombe' est dans :", opts:["ch. 8","ch. 9","ch. 10","Aucun"], ans:2, ok:"Exact. ch. 10.", ko:"Faux. Alerte bombe = ch. 10." },
+  { theme:"Concept sécurité", q:"Le 'Vandalisme' est dans :", opts:["ch. 8","ch. 9","ch. 10","Hors chapitre"], ans:2, ok:"Exact. ch. 10.", ko:"Faux. Vandalisme = ch. 10." },
+  { theme:"Concept sécurité", q:"Les 'Voies de fait' sont dans :", opts:["ch. 8","ch. 9","ch. 10","ch. 11"], ans:1, ok:"Exact. ch. 9.", ko:"Faux. Voies de fait = ch. 9." },
+  { theme:"Concept sécurité", q:"'Maladie aiguë des employés SEM' est dans :", opts:["ch. 8","ch. 9","ch. 10","Pas dans le concept"], ans:2, ok:"Exact. ch. 10.", ko:"Faux. Maladie aiguë = ch. 10." },
+  { theme:"Concept sécurité", q:"Les 'Manifestations non-autorisées' sont dans :", opts:["Uniquement ch. 9","Uniquement ch. 10","Les deux (9 et 10)","Aucun"], ans:2, ok:"Exact. Les deux !", ko:"Piège ! Dans ch. 9 (Manifestation non-autorisée) ET ch. 10 (Rassemblement / Manifestation non-autorisée)." },
+  { theme:"Concept sécurité", q:"'Prise d'otages' est dans :", opts:["ch. 8","ch. 9","ch. 10","ch. 11"], ans:1, ok:"Exact. ch. 9.", ko:"Faux. Prise d'otages = ch. 9 (Agression)." },
+  { theme:"Concept sécurité", q:"'Tentatives de suicide' est dans :", opts:["ch. 8","ch. 9","ch. 10","Aucun"], ans:1, ok:"Exact. ch. 9.", ko:"Faux. Tentatives de suicide = ch. 9." },
+  { theme:"Concept sécurité", q:"'Panne de courant' est dans :", opts:["ch. 8","ch. 9","ch. 10","Aucun"], ans:2, ok:"Exact. ch. 10.", ko:"Faux. Panne de courant = ch. 10." },
+  { theme:"Concept sécurité", q:"'Objet suspect' est dans :", opts:["ch. 8","ch. 9","ch. 10","ch. 11"], ans:2, ok:"Exact. ch. 10.", ko:"Faux. Objet suspect = ch. 10." },
+
+  // 3D / ORA
+  { theme:"Approche 3D", q:"Que signifie 'Désamorcer' ?", opts:["Couper le courant","Calmer/désamorcer la situation","Désarmer la personne","Appeler renforts"], ans:1, ok:"Exact.", ko:"Faux. Calmer la situation avant escalade." },
+  { theme:"Phases d'engagement", q:"Phase la PLUS proche ?", opts:["Publique","Sociale","Personnelle","Intime"], ans:3, ok:"Exact.", ko:"Faux. Intime." },
+  { theme:"Phases d'engagement", q:"Quelle phase suit 'Personnelle' ?", opts:["Intime","Sociale","Publique","Privée"], ans:1, ok:"Exact.", ko:"Faux. Intime → Personnelle → Sociale → Publique." },
+
+  // MESURES DISCIPLINAIRES (vérifié IMG_4533)
+  { theme:"Mesures disciplinaires", q:"Quelle est la durée maximale de l'assignation à un centre spécifique ?", opts:["12h","24h","48h","1 semaine"], ans:1, ok:"Exact. 24 heures maximum.", ko:"Faux. Durée maximale = 24 heures." },
+  { theme:"Mesures disciplinaires", q:"Lequel n'est PAS une mesure disciplinaire ?", opts:["Refus argent de poche","Exclusion centre","Confiscation téléphone","Assignation centre spécifique"], ans:2, ok:"Exact.", ko:"Faux. Confiscation téléphone n'est pas listée." },
+
+  // CHT / PLEX
+  { theme:"CHT", q:"CHT signifie :", opts:["Chambre d'Hébergement Temporaire","Centre Hôtelier Transitoire","Cellule Haute Tension","Chambre Habitable Tactique"], ans:0, ok:"Exact.", ko:"Faux. Chambre d'Hébergement Temporaire." },
+  { theme:"PLEX", q:"PLEX signifie :", opts:["Plan Logistique Externe","Plan d'Exploitation Hébergement","Procédure Légale d'Évacuation","Plan Local d'Évacuation"], ans:1, ok:"Exact.", ko:"Faux. Plan d'Exploitation Hébergement." },
+
+  // VALEURS — pièges sur la confusion
+  { theme:"Valeurs", q:"« Vision à long terme » =", opts:["Protectas","SEM","Les deux","Aucun"], ans:1, ok:"Exact. SEM.", ko:"Faux. SEM." },
+  { theme:"Valeurs", q:"« Fiabilité » =", opts:["Protectas","SEM","Les deux","Aucun"], ans:0, ok:"Exact. Protectas.", ko:"Faux. Protectas." },
+  { theme:"Valeurs", q:"Total Protectas + SEM ?", opts:["5","6","7","8"], ans:2, ok:"Exact. 7.", ko:"Faux. Protectas (3) + SEM (4) = 7." },
+  { theme:"Valeurs", q:"« Courage » =", opts:["Protectas","SEM","Les deux","Aucun"], ans:1, ok:"Exact. SEM.", ko:"Faux. Courage = SEM." },
+  { theme:"Valeurs", q:"« Vigilance » =", opts:["Protectas","SEM","Les deux","Aucun"], ans:0, ok:"Exact. Protectas.", ko:"Faux. Vigilance = Protectas." },
+  { theme:"Valeurs", q:"« Respect » =", opts:["Protectas","SEM","Les deux","Aucun"], ans:1, ok:"Exact. SEM.", ko:"Faux. Respect = SEM." },
+
+  // RESPONSABLES
+  { theme:"Responsables", q:"Prénom de SUKYART ?", opts:["Engin","Sunti","Tas","Pres"], ans:1, ok:"Exact.", ko:"Faux. SUKYART Sunti." },
+  { theme:"Responsables", q:"Qui est M. TAS ?", opts:["Directeur SEM","Responsable sécurité SEM","Agent Protectas","Médecin"], ans:1, ok:"Exact.", ko:"Faux. Responsable sécurité SEM." },
+
+  // COULEURS
+  { theme:"Couleurs mentales", q:"Quelle couleur = 'en pause' ?", opts:["Vert","Jaune","Rouge","Bleu"], ans:0, ok:"Exact. Vert.", ko:"Faux. Vert = Normal/sécurité/pause." },
+  { theme:"Couleurs mentales", q:"Combien de couleurs de préparation mentale ?", opts:["2","3","4","5"], ans:1, ok:"Exact. 3.", ko:"Faux. 3 : Vert, Jaune, Rouge." },
+];
+
+// ═══════════════════════════════════════════════════════════
+// LOGIQUE QUIZ
+// ═══════════════════════════════════════════════════════════
+let mode = null;
+let questions = [];
+let current = 0;
+let score = 0;
+let answered = false;
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function showMenu() {
+  document.getElementById('app').innerHTML = `
+    <h1>Quiz SEM Protectas</h1>
+    <div class="subtitle">Préparation au test de connaissance — Objectif 90%+</div>
+    <button class="menu-btn" onclick="startQuiz('normal')">
+      <b>📘 Mode normal</b>
+      <span>15 questions tirées au hasard — toutes les thématiques (parades, clés, théorie...)</span>
+    </button>
+    <button class="menu-btn hard" onclick="startQuiz('hard')">
+      <b>🔥 Mode hardcore</b>
+      <span>15 questions difficiles — sans parades ni clés. Pièges sur les articles, chapitres et définitions.</span>
+    </button>
+    <button class="menu-btn" onclick="startQuiz('all')">
+      <b>🎯 Mode complet</b>
+      <span>20 questions tirées des deux banques mélangées</span>
+    </button>
+  `;
+}
+
+function startQuiz(selectedMode) {
+  mode = selectedMode;
+  let bank = [];
+  let count = 15;
+  if (mode === 'normal') bank = QUESTIONS_NORMAL;
+  else if (mode === 'hard') bank = QUESTIONS_HARD;
+  else if (mode === 'all') { bank = [...QUESTIONS_NORMAL, ...QUESTIONS_HARD]; count = 20; }
+  questions = shuffle(bank).slice(0, count);
+  current = 0;
+  score = 0;
+  answered = false;
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const q = questions[current];
+  const pct = Math.round((current / questions.length) * 100);
+  const isHard = mode === 'hard';
+  const fillClass = isHard ? 'progress-bar-fill hard' : 'progress-bar-fill';
+  const badge = isHard
+    ? '<span class="difficulty-badge">MODE HARDCORE</span>'
+    : mode === 'all'
+      ? '<span class="difficulty-badge easy">MODE COMPLET</span>'
+      : '<span class="difficulty-badge easy">MODE NORMAL</span>';
+
+  const opts = q.opts.map((o, i) =>
+    `<button class="opt-btn" onclick="answer(${i})">${String.fromCharCode(65+i)}) ${o}</button>`
+  ).join('');
+
+  document.getElementById('app').innerHTML = `
+    ${badge}
+    <div class="progress-bar-bg"><div class="${fillClass}" style="width:${pct}%"></div></div>
+    <div class="meta">
+      <span>Question ${current + 1} / ${questions.length}</span>
+      <span>Score : ${score}</span>
+    </div>
+    <div class="question-card">
+      <span class="theme-badge">${q.theme}</span>
+      <div class="question-text">${q.q}</div>
+      <div class="options">${opts}</div>
+      <div id="feedback"></div>
+    </div>
+    <div id="next-wrap"></div>
+    <a class="back-link" onclick="showMenu()">← Retour au menu</a>
+  `;
+  answered = false;
+}
+
+function answer(idx) {
+  if (answered) return;
+  answered = true;
+  const q = questions[current];
+  const btns = document.querySelectorAll('.opt-btn');
+  btns.forEach(b => b.disabled = true);
+
+  const isCorrect = idx === q.ans;
+  if (isCorrect) score++;
+
+  btns[idx].classList.add(isCorrect ? 'correct' : 'wrong');
+  if (!isCorrect) btns[q.ans].classList.add('reveal');
+
+  document.getElementById('feedback').innerHTML = `
+    <div class="feedback ${isCorrect ? 'good' : 'bad'}">
+      ${isCorrect ? '✓ ' + q.ok : '✗ ' + q.ko}
+    </div>
+  `;
+
+  const label = current < questions.length - 1 ? 'Question suivante' : 'Voir mon score';
+  const btnClass = mode === 'hard' ? 'next-btn hard' : 'next-btn';
+  document.getElementById('next-wrap').innerHTML =
+    `<button class="${btnClass}" onclick="next()">${label}</button>`;
+}
+
+function next() {
+  current++;
+  if (current >= questions.length) {
+    showScore();
+  } else {
+    renderQuestion();
+  }
+}
+
+function showScore() {
+  const pct = Math.round((score / questions.length) * 100);
+
+  let msg = '';
+  if (pct >= 90) msg = 'Excellent ! Tu es prêt pour le test. 🎯';
+  else if (pct >= 70) msg = 'Bien ! Encore un peu de révision sur les points faibles.';
+  else if (pct >= 50) msg = 'Tu progresses — relis les fiches et réessaie.';
+  else msg = 'Courage ! Retour aux fiches puis nouveau quiz.';
+
+  const color = pct >= 90 ? '#27500A' : pct >= 70 ? '#633806' : '#501313';
+
+  document.getElementById('app').innerHTML = `
+    <h1>Résultat</h1>
+    <div class="score-card">
+      <div class="score-big" style="color:${color}">${pct}%</div>
+      <div class="score-label">${score} bonnes réponses sur ${questions.length}</div>
+      <div class="score-msg">${msg}</div>
+      <div class="btn-row">
+        <button class="restart-btn" onclick="startQuiz('${mode}')">Nouveau quiz (${mode === 'normal' ? 'normal' : mode === 'hard' ? 'hardcore' : 'complet'})</button>
+        <button class="restart-btn secondary" onclick="showMenu()">Changer de mode</button>
+      </div>
+    </div>
+  `;
+}
+
+showMenu();
+</script>
+</body>
+</html>
